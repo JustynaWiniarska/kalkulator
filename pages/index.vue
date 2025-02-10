@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Label from '@/components/ui/Label.vue'
 import Input from '@/components/ui/Input.vue'
 
 let rocznik = ref('')
 let cenaNetto = ref('')
+let cenaBrutto = ref('')
 let showYearDisclaimer = ref(false)
 
 const verifyValue = () => {
@@ -19,6 +20,26 @@ const verifyValue = () => {
 let showPriceDisclaimer = computed(() => {
     return parseInt(cenaNetto.value) > 400000
 })
+
+watch(cenaNetto, (newValue) => {
+  if (newValue && !isNaN(parseInt(newValue))) {
+    cenaBrutto.value = calculateBrutto(parseFloat(newValue)).toFixed(2)
+  }
+})
+
+watch(cenaBrutto, (newValue) => {
+  if (newValue && !isNaN(parseInt(newValue))) {
+    cenaNetto.value = calculateNetto(parseFloat(newValue)).toFixed(2)
+  }
+})
+
+const calculateBrutto = (netto: number) => {
+  return netto * (1 + 0.23)
+}
+
+const calculateNetto = (brutto: number) => {
+  return brutto / (1 + 0.23)
+}
 
 </script>
 
@@ -52,7 +73,11 @@ let showPriceDisclaimer = computed(() => {
           </div>
           <div class="mb-4">
             <Label for="cena-brutto">Cena brutto</Label>
-            <Input id="cena-brutto" type="number" />
+            <Input 
+              id="cena-brutto"
+              v-model="cenaBrutto"
+              type="number" 
+            />
           </div>
         </div>
         <div v-if="showPriceDisclaimer" class="mb-6 text-red-700">

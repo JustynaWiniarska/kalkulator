@@ -1,3 +1,27 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import Label from '@/components/ui/Label.vue'
+import Input from '@/components/ui/Input.vue'
+
+let rocznik = ref('')
+let cenaNetto = ref('')
+let showYearDisclaimer = ref(false)
+
+const verifyValue = () => {
+  const year = parseInt(rocznik.value)
+  if (year < 2020) {
+    showYearDisclaimer.value = true
+  } else {
+    showYearDisclaimer.value = false
+  }
+}
+
+let showPriceDisclaimer = computed(() => {
+    return parseInt(cenaNetto.value) > 400000
+})
+
+</script>
+
 <template>
   <div class="max-w-xl m-auto my-20 font-serif tracking-wide">
     <h1 class="font-bold text-2xl mb-6">Kalkulator OC/AC</h1>
@@ -7,27 +31,35 @@
       <div class="my-10">
         <div class="mb-4">
             <Label for="rocznik">Rocznik</Label>
-            <Input id="rocznik" type="text" />
+            <Input 
+              id="rocznik"
+              v-model="rocznik"
+              type="number"
+              @blur="verifyValue"
+            />
           </div>
+          <div v-if="showYearDisclaimer" class="mb-6 text-red-700">
+            Samochodów starszych od 5 lat nie obsługujemy.
+        </div>
         <!-- ceny -->
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">
             <Label for="cena-netto">Cena netto</Label>
-            <Input id="cena-netto" type="text" />
+            <Input 
+              id="cena-netto"
+              v-model="cenaNetto"
+              type="number" />
           </div>
           <div class="mb-4">
             <Label for="cena-brutto">Cena brutto</Label>
-            <Input id="cena-brutto" type="text" />
+            <Input id="cena-brutto" type="number" />
           </div>
+        </div>
+        <div v-if="showPriceDisclaimer" class="mb-6 text-red-700">
+          Dla samochodów powyżej 400000 zł netto składki nie szacujemy, ponieważ potrzebne jest dokładne wyliczenie składki u ubezpieczyciela.
         </div>
       </div>
 
 
   </div>
 </template>
-
-
-<script setup lang="ts">
-import Label from '@/components/ui/Label.vue'
-import Input from '@/components/ui/Input.vue'
-</script>

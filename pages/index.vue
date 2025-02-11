@@ -66,7 +66,7 @@ const calculateInsurance = async () => {
 </script>
 
 <template>
-  <div class="max-w-xl m-auto my-20 font-serif tracking-wide p-8">
+  <div class="max-w-xl m-auto my-10 font-serif tracking-wide p-8">
     <h1 class="font-bold text-2xl mb-6">Kalkulator OC/AC</h1>
     <p class="text-lg">Poniższy kalkulator służy do obliczenia rocznej składki ubezpieczenia OC/AC na podstawie wieku samochodu i jego wartości.</p>
       <div class="mt-10 mb-6">
@@ -121,6 +121,19 @@ const calculateInsurance = async () => {
       </div>
       <div v-if="showResult">
         <p class="text-xl">Roczna skladka OC/AC wynosi: <span class="font-bold">{{ skladkaOC }} zł</span>.</p>
+        <p class="text-lg mt-6 mb-4">Czy chcesz rozlozyc skladke na raty?</p>
+        <form>
+          <div class="flex items-center space-x-4">
+            <label>
+              <input type="radio" name="option" value="option1" />
+              2 Raty
+            </label>
+            <label>
+              <input type="radio" name="option" value="option2" />
+              4 Raty
+            </label>
+          </div>
+        </form>
       </div>
   </div>
 </template>

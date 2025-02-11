@@ -10,14 +10,14 @@ let cenaNetto = ref(0)
 let cenaBrutto = ref(0)
 let showYearDisclaimer = ref(false)
 let isGPSchecked = ref(true)
+let skladkaOC = ref(0)
+let showResult = ref(false)
 
-const currentYear = computed(() => {
-  return new Date().getFullYear()
-})
+const currentYear = new Date().getFullYear()
 
 const verifyYear = () => {
   const carYear = rocznik.value
-  const limitYear = currentYear.value - 5
+  const limitYear = currentYear - 5
   if (carYear < limitYear) {
     showYearDisclaimer.value = true
   } else {
@@ -49,13 +49,38 @@ const calculateNetto = (brutto: number) => {
   return brutto / (1 + 0.23)
 }
 
+const obliczWspolczynnik = (netVal: number, year: number) => {
+  const newCar: boolean  = year === currentYear || year === currentYear - 1
+
+  let rate: number | undefined
+  if (netVal < 40000) rate = 8
+  if (netVal < 100000) rate = 5
+  if (netVal < 200000) rate = 4
+  if (netVal <= 400000) rate = 2
+
+  if (rate !== undefined && !newCar) rate += 1
+  return rate ?? null
+}
+
+const calculateInsurance = (netValue: number, year: number) => {
+  netValue = cenaNetto.value
+  year = rocznik.value
+  const wspolczynnink = obliczWspolczynnik(netValue, year)
+  if (wspolczynnink !== null) {
+    skladkaOC.value = (wspolczynnink/100) * netValue
+    
+  }
+  if (skladkaOC.value !== 0) {
+    showResult.value = true
+  }
+}
 </script>
 
 <template>
-  <div class="max-w-xl m-auto my-20 font-serif tracking-wide">
+  <div class="max-w-xl m-auto my-20 font-serif tracking-wide p-8">
     <h1 class="font-bold text-2xl mb-6">Kalkulator OC/AC</h1>
     <p class="text-lg">Poniższy kalkulator służy do obliczenia rocznej składki ubezpieczenia OC/AC na podstawie wieku samochodu i jego wartości.</p>
-      <div class="my-10">
+      <div class="mt-10 mb-6">
         <div class="mb-4">
             <Label for="rocznik">Rocznik</Label>
             <Input 
@@ -99,8 +124,14 @@ const calculateNetto = (brutto: number) => {
           />
           <Label for="nadajnik-gps">Pakiet Drive+</Label>
         </div>
-
-        <Button>Oblicz składkę OC/AC</Button>
+        <Button
+          @click="calculateInsurance"
+        >
+          Oblicz składkę OC/AC
+        </Button>
+      </div>
+      <div v-if="showResult">
+        <p class="text-xl">Skladka OC/AC wynosi: <span class="font-bold">{{ skladkaOC }} zł</span>.</p>
       </div>
   </div>
 </template>

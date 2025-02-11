@@ -51,32 +51,22 @@ const calculateNetto = (brutto: number) => {
   return Number(result.toFixed())
 }
 
-const obliczWspolczynnik = (netVal: number, year: number) => {
-  const newCar: boolean  = year === currentYear || year === currentYear - 1
-
-  let rate: number | undefined
-  if (netVal < 40000) rate = 8
-  if (netVal >= 40000 && netVal < 100000) rate = 5
-  if (netVal >= 100000 && netVal < 200000) rate = 4
-  if (netVal >= 200000 && netVal <= 400000) rate = 2
-
-  if (rate !== undefined && !newCar) rate += 1
-  return rate ?? null
-}
-
-const calculateInsurance = () => {
-  const netValue = cenaNetto.value
-  const year = rocznik.value
-  const wspolczynnink = obliczWspolczynnik(netValue, year)
-  if (wspolczynnink !== null) {
-    let result = (wspolczynnink/100) * netValue
-    if (!isGPSchecked.value) {
-      result *= 1.11
+const calculateInsurance = async () => {
+  try {
+    const response = await $fetch<{ result: number }>('api/calculations', {
+    method: 'POST',
+    body: {
+      netValue: cenaNetto.value,
+      year: rocznik.value,
+      isGPSchecked: isGPSchecked.value
     }
-    skladkaOC.value = Number(result.toFixed())
+  })
+
+  skladkaOC.value = Number(response.result.toFixed())
+  showResult.value = true
   }
-  if (skladkaOC.value !== 0) {
-    showResult.value = true
+  catch (e) {
+    console.error(e)
   }
 }
 </script>

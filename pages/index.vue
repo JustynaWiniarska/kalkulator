@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import Label from '@/components/ui/Label.vue'
 import Input from '@/components/ui/Input.vue'
 import Switch from '@/components/ui/Switch.vue'
+import Button from '@/components/ui/Button.vue'
 
 let rocznik = ref(0)
 let cenaNetto = ref(0)
@@ -99,6 +100,7 @@ const calculateNetto = (brutto: number) => {
           <Label for="nadajnik-gps">Pakiet Drive+</Label>
         </div>
 
+        <Button>Oblicz składkę OC/AC</Button>
       </div>
   </div>
 </template>

@@ -3,14 +3,19 @@ import { computed, ref, watch } from 'vue'
 import Label from '@/components/ui/Label.vue'
 import Input from '@/components/ui/Input.vue'
 
-let rocznik = ref('')
-let cenaNetto = ref('')
-let cenaBrutto = ref('')
+let rocznik = ref(0)
+let cenaNetto = ref(0)
+let cenaBrutto = ref(0)
 let showYearDisclaimer = ref(false)
 
-const verifyValue = () => {
-  const year = parseInt(rocznik.value)
-  if (year < 2020) {
+const currentYear = computed(() => {
+  return new Date().getFullYear()
+})
+
+const verifyYear = () => {
+  const carYear = rocznik.value
+  const limitYear = currentYear.value - 5
+  if (carYear < limitYear) {
     showYearDisclaimer.value = true
   } else {
     showYearDisclaimer.value = false
@@ -18,18 +23,18 @@ const verifyValue = () => {
 }
 
 let showPriceDisclaimer = computed(() => {
-    return parseInt(cenaNetto.value) > 400000
+    return cenaNetto.value > 400000
 })
 
-watch(cenaNetto, (newValue) => {
-  if (newValue && !isNaN(parseInt(newValue))) {
-    cenaBrutto.value = calculateBrutto(parseFloat(newValue)).toFixed(2)
+watch(cenaNetto, (newVal) => {
+  if (newVal) {
+    cenaBrutto.value = calculateBrutto(newVal)
   }
 })
 
 watch(cenaBrutto, (newValue) => {
-  if (newValue && !isNaN(parseInt(newValue))) {
-    cenaNetto.value = calculateNetto(parseFloat(newValue)).toFixed(2)
+  if (newValue) {
+    cenaNetto.value = calculateNetto(newValue)
   }
 })
 
@@ -56,11 +61,13 @@ const calculateNetto = (brutto: number) => {
               id="rocznik"
               v-model="rocznik"
               type="number"
-              @blur="verifyValue"
+              min="1950"
+              max="2025"
+              @blur="verifyYear"
             />
           </div>
           <div v-if="showYearDisclaimer" class="mb-6 text-red-700">
-            Samochodów starszych od 5 lat nie obsługujemy.
+            Samochodów starszych niż 5 lat nie obsługujemy.
         </div>
         <!-- ceny -->
         <div class="grid grid-cols-2 gap-4">
@@ -69,7 +76,8 @@ const calculateNetto = (brutto: number) => {
             <Input 
               id="cena-netto"
               v-model="cenaNetto"
-              type="number" />
+              type="number"
+            />
           </div>
           <div class="mb-4">
             <Label for="cena-brutto">Cena brutto</Label>

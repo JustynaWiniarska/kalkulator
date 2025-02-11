@@ -42,11 +42,13 @@ watch(cenaBrutto, (newValue) => {
 })
 
 const calculateBrutto = (netto: number) => {
-  return netto * (1 + 0.23)
+  const result = netto * (1 + 0.23)
+  return Number(result.toFixed())
 }
 
 const calculateNetto = (brutto: number) => {
-  return brutto / (1 + 0.23)
+  const result =  brutto / (1 + 0.23)
+  return Number(result.toFixed())
 }
 
 const obliczWspolczynnik = (netVal: number, year: number) => {
@@ -134,7 +136,7 @@ const calculateInsurance = () => {
         </Button>
       </div>
       <div v-if="showResult">
-        <p class="text-xl">Skladka OC/AC wynosi: <span class="font-bold">{{ skladkaOC }} zł</span>.</p>
+        <p class="text-xl">Roczna skladka OC/AC wynosi: <span class="font-bold">{{ skladkaOC }} zł</span>.</p>
       </div>
   </div>
 </template>

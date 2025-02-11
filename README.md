@@ -8,3 +8,6 @@ Vue3, Nuxt3, Tailwind
 - npm run dev (to run the server)
 
 The development server should be on `http://localhost:3000`
+
+#### Project Preview:
+<img width="40%" alt="Screnshot showing how the kalculator looks like" src="public/screenshot.png" />

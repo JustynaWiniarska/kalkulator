@@ -12,6 +12,9 @@ let showYearDisclaimer = ref(false)
 let isGPSchecked = ref(true)
 let skladkaOC = ref(0)
 let showResult = ref(false)
+let rata = ref(null)
+let wysokoscRaty = ref(0)
+let showDividedAnount = ref(false)
 
 const currentYear = new Date().getFullYear()
 
@@ -62,6 +65,19 @@ const calculateInsurance = async () => {
   catch (e) {
     console.error(e)
   }
+}
+
+const calculateDividedPayment = () => {
+  const payment = skladkaOC.value + 200
+  wysokoscRaty.value = 0
+
+  if (rata.value === 'cztery-raty') {
+    wysokoscRaty.value = (payment * 1.04) / 4
+  }
+  if (rata.value === 'dwie-raty') {
+    wysokoscRaty.value = (payment * 1.02) / 2
+  }
+  showDividedAnount.value = true
 }
 </script>
 
@@ -121,19 +137,26 @@ const calculateInsurance = async () => {
       </div>
       <div v-if="showResult">
         <p class="text-xl">Roczna skladka OC/AC wynosi: <span class="font-bold">{{ skladkaOC }} zł</span>.</p>
-        <p class="text-lg mt-6 mb-4">Czy chcesz rozlozyc skladke na raty?</p>
+        <div class="mt-6 mb-4">
+          <p class="text-lg">Czy chcesz rozłożyć składkę na raty?</p>
+          <p class="text-md">* Jeśli tak, to zaznacz ilość rat poniżej.</p>
+        </div>
         <form>
           <div class="flex items-center space-x-4">
             <label>
-              <input type="radio" name="option" value="option1" />
+              <input type="radio" name="option" value="dwie-raty" v-model="rata" @change="calculateDividedPayment" />
               2 Raty
             </label>
             <label>
-              <input type="radio" name="option" value="option2" />
+              <input type="radio" name="option" value="cztery-raty" v-model="rata" @change="calculateDividedPayment" />
               4 Raty
             </label>
           </div>
         </form>
+        <p 
+          class="text-xl mt-6"
+          v-if="showDividedAnount"
+        >Przy rozłożeniu składki na raty, jedna rata wynosić będzie <span class="font-bold">{{ wysokoscRaty }} zł</span>.</p>
       </div>
   </div>
 </template>

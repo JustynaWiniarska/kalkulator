@@ -16,18 +16,10 @@ let showResult = ref(false)
 const currentYear = new Date().getFullYear()
 
 const verifyYear = () => {
-  const carYear = rocznik.value
-  const limitYear = currentYear - 5
-  if (carYear < limitYear) {
-    showYearDisclaimer.value = true
-  } else {
-    showYearDisclaimer.value = false
-  }
+  showYearDisclaimer.value = rocznik.value !== null && rocznik.value < currentYear - 5
 }
 
-let showPriceDisclaimer = computed(() => {
-    return cenaNetto.value > 400000
-})
+const showPriceDisclaimer = computed(() => cenaNetto.value !== null && cenaNetto.value > 400000)
 
 watch(cenaNetto, (newVal) => {
   if (newVal) {
@@ -52,6 +44,8 @@ const calculateNetto = (brutto: number) => {
 }
 
 const calculateInsurance = async () => {
+  if (!rocznik.value || !cenaNetto.value) return
+
   try {
     const response = await $fetch<{ result: number }>('api/calculations', {
     method: 'POST',

@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import Label from '@/components/ui/Label.vue'
 import Input from '@/components/ui/Input.vue'
+import Switch from '@/components/ui/Switch.vue'
 
 let rocznik = ref(0)
 let cenaNetto = ref(0)
@@ -52,8 +53,6 @@ const calculateNetto = (brutto: number) => {
   <div class="max-w-xl m-auto my-20 font-serif tracking-wide">
     <h1 class="font-bold text-2xl mb-6">Kalkulator OC/AC</h1>
     <p class="text-lg">Poniższy kalkulator służy do obliczenia rocznej składki ubezpieczenia OC/AC na podstawie wieku samochodu i jego wartości.</p>
-
-      <!-- kalkulator -->
       <div class="my-10">
         <div class="mb-4">
             <Label for="rocznik">Rocznik</Label>
@@ -69,7 +68,6 @@ const calculateNetto = (brutto: number) => {
           <div v-if="showYearDisclaimer" class="mb-6 text-red-700">
             Samochodów starszych niż 5 lat nie obsługujemy.
         </div>
-        <!-- ceny -->
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">
             <Label for="cena-netto">Cena netto</Label>
@@ -91,8 +89,10 @@ const calculateNetto = (brutto: number) => {
         <div v-if="showPriceDisclaimer" class="mb-6 text-red-700">
           Dla samochodów powyżej 400000 zł netto składki nie szacujemy, ponieważ potrzebne jest dokładne wyliczenie składki u ubezpieczyciela.
         </div>
+        <div class="flex items-center space-x-2 mt-4">
+          <Switch id="nadajnik-gps" class="mr-2" />
+          <Label for="nadajnik-gps">Pakiet Drive+</Label>
+        </div>
       </div>
-
-
   </div>
 </template>

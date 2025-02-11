@@ -8,6 +8,7 @@ import Button from '@/components/ui/Button.vue'
 let rocznik = ref(0)
 let cenaNetto = ref(0)
 let cenaBrutto = ref(0)
+let showInputDisclaimer = ref(false)
 let showYearDisclaimer = ref(false)
 let isGPSchecked = ref(true)
 let skladkaOC = ref(0)
@@ -17,9 +18,18 @@ let wysokoscRaty = ref(0)
 let showDividedAnount = ref(false)
 
 const currentYear = new Date().getFullYear()
+const limitYear = currentYear - 5
 
 const verifyYear = () => {
-  showYearDisclaimer.value = rocznik.value !== null && rocznik.value < currentYear - 5
+  showInputDisclaimer.value = false
+  showYearDisclaimer.value = false
+  if (!rocznik.value || rocznik.value > currentYear || rocznik.value < 1900) {
+    showInputDisclaimer.value = true
+    return
+  }
+  if (rocznik.value < limitYear) {
+    showYearDisclaimer.value = true
+  }
 }
 
 const showPriceDisclaimer = computed(() => cenaNetto.value !== null && cenaNetto.value > 400000)
@@ -47,7 +57,7 @@ const calculateNetto = (brutto: number) => {
 }
 
 const calculateInsurance = async () => {
-  if (!rocznik.value || !cenaNetto.value) return
+  if (!rocznik.value || !cenaNetto.value || rocznik.value < limitYear) return
 
   try {
     const response = await $fetch<{ result: number }>('api/calculations', {
@@ -61,6 +71,8 @@ const calculateInsurance = async () => {
 
   skladkaOC.value = Number(response.result.toFixed())
   showResult.value = true
+  showDividedAnount.value = false
+  rata.value = null
   }
   catch (e) {
     console.error(e)
@@ -72,33 +84,35 @@ const calculateDividedPayment = () => {
   wysokoscRaty.value = 0
 
   if (rata.value === 'cztery-raty') {
-    wysokoscRaty.value = (payment * 1.04) / 4
+    const result = (payment * 1.04) / 4
+    wysokoscRaty.value = Number(result.toFixed())
   }
   if (rata.value === 'dwie-raty') {
-    wysokoscRaty.value = (payment * 1.02) / 2
+    const result = (payment * 1.02) / 2
+    console.log('result', result)
+    wysokoscRaty.value = Number(result.toFixed())
   }
   showDividedAnount.value = true
 }
 </script>
 
 <template>
-  <div class="max-w-xl m-auto my-10 font-serif tracking-wide p-8">
+  <div class="max-w-xl m-auto my-6 font-serif tracking-wide p-8">
     <h1 class="font-bold text-2xl mb-6">Kalkulator OC/AC</h1>
     <p class="text-lg">Poniższy kalkulator służy do obliczenia rocznej składki ubezpieczenia OC/AC na podstawie wieku samochodu i jego wartości.</p>
       <div class="mt-10 mb-6">
         <div class="mb-4">
-            <Label for="rocznik">Rocznik</Label>
-            <Input 
-              id="rocznik"
-              v-model="rocznik"
-              type="number"
-              min="1950"
-              max="2025"
-              @blur="verifyYear"
-            />
-          </div>
-          <div v-if="showYearDisclaimer" class="mb-6 text-red-700">
-            Samochodów starszych niż 5 lat nie obsługujemy.
+          <Label for="rocznik">Rocznik</Label>
+          <Input 
+            id="rocznik"
+            v-model="rocznik"
+            type="number"
+            @blur="verifyYear"
+          />
+        </div>  
+        <div class="mb-6">
+          <p class="text-red-700" v-if="showInputDisclaimer">Proszę wpisać poprawny rocznik.</p>
+          <p class="text-red-700" v-if="showYearDisclaimer">Samochodów starszych niż 5 lat nie obsługujemy.</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">

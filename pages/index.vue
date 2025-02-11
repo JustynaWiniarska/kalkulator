@@ -8,6 +8,7 @@ let rocznik = ref(0)
 let cenaNetto = ref(0)
 let cenaBrutto = ref(0)
 let showYearDisclaimer = ref(false)
+let isGPSchecked = ref(true)
 
 const currentYear = computed(() => {
   return new Date().getFullYear()
@@ -90,9 +91,14 @@ const calculateNetto = (brutto: number) => {
           Dla samochodów powyżej 400000 zł netto składki nie szacujemy, ponieważ potrzebne jest dokładne wyliczenie składki u ubezpieczyciela.
         </div>
         <div class="flex items-center space-x-2 mt-4">
-          <Switch id="nadajnik-gps" class="mr-2" />
+          <Switch 
+            id="nadajnik-gps" 
+            class="mr-2"
+            v-model:checked="isGPSchecked"
+          />
           <Label for="nadajnik-gps">Pakiet Drive+</Label>
         </div>
+
       </div>
   </div>
 </template>
